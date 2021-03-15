@@ -1,0 +1,9 @@
+# This file contains recursive sources that require this package
+Cython
+acrn-hypervisor
+compat-libpng-soname12
+libpng
+libreoffice
+samba
+shadow
+spice

@@ -1,0 +1,7 @@
+10.1
+autoconf
+gettext
+gfortran
+glibc-locale
+libxslt-bin
+pkgconfig(ncursesw)

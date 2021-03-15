@@ -1,0 +1,11 @@
+--- gdb-7.9/gdb/configure~	2015-02-20 12:11:44.000000000 -0500
++++ gdb-7.9/gdb/configure	2015-06-23 12:09:45.155234417 -0400
+@@ -7112,7 +7112,7 @@
+   return 0;
+ }
+ _ACEOF
+-for ac_lib in '' ncurses cursesX curses; do
++for ac_lib in '' ncursesw cursesX cursesw; do
+   if test -z "$ac_lib"; then
+     ac_res="none required"
+   else
