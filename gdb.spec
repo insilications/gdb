@@ -133,17 +133,17 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1615845120
+export SOURCE_DATE_EPOCH=1615856834
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 ## altflags1 content
-export CFLAGS="-g3 -O2"
+export CFLAGS="-g3 -O3 -Wl,--no-as-needed --param=lto-max-streaming-parallelism=16 -fgraphite-identity -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fipa-pta -flto=16"
 #
-export CXXFLAGS="-g3 -O2"
+export CXXFLAGS="-g3 -O3 -Wl,--no-as-needed --param=lto-max-streaming-parallelism=16 -fgraphite-identity -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fipa-pta -flto=16"
 #
-export LDFLAGS="-g3 -O2 -Wl,--whole-archive /usr/lib64/haswell/libpython3.9.so -Wl,--no-whole-archive"
+export LDFLAGS="-g3 -O3 -Wl,--no-as-needed -Wl,--whole-archive /usr/lib64/haswell/libpython3.9.so -Wl,--no-whole-archive --param=lto-max-streaming-parallelism=16 -fgraphite-identity -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fipa-pta -flto=16"
 #
 export AR=/usr/bin/gcc-ar
 export RANLIB=/usr/bin/gcc-ranlib
@@ -169,12 +169,12 @@ export CCACHE_BASEDIR=/builddir/build/BUILD
 #export CCACHE_DEBUG=true
 #export CCACHE_NODIRECT=true
 ## altflags1 end
-%configure --enable-targets=%{_arch}-unknown-linux-gnu,%{_arch}-generic-linux-gnu  --target=%{_arch}-generic-linux-gnu %{_arch}-generic-linux-gnu --enable-static --disable-binutils --disable-ld --disable-gold --disable-gas --disable-sim --disable-gprof --with-separate-debug-dir=/usr/lib/debug--enable-plugins --with-system-zlib --with-python=/usr/bin/python3
+%configure --enable-static --enable-targets=%{_arch}-unknown-linux-gnu,%{_arch}-generic-linux-gnu  --target=%{_arch}-generic-linux-gnu %{_arch}-generic-linux-gnu --enable-tui --disable-binutils --disable-ld --disable-gold --disable-gas --disable-sim --disable-gprof --with-intel-pt --with-separate-debug-dir=/usr/lib/debug --enable-plugins --with-system-zlib --with-python=/usr/bin/python3
 make  %{?_smp_mflags}
 
 
 %install
-export SOURCE_DATE_EPOCH=1615845120
+export SOURCE_DATE_EPOCH=1615856834
 rm -rf %{buildroot}
 %make_install
 %find_lang bfd

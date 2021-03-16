@@ -1,8 +1,8 @@
-export CFLAGS="-g3 -O2"
+export CFLAGS="-g3 -O3 -Wl,--no-as-needed --param=lto-max-streaming-parallelism=16 -fgraphite-identity -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fipa-pta -flto=16"
 #
-export CXXFLAGS="-g3 -O2"
+export CXXFLAGS="-g3 -O3 -Wl,--no-as-needed --param=lto-max-streaming-parallelism=16 -fgraphite-identity -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fipa-pta -flto=16"
 #
-export LDFLAGS="-g3 -O2 -Wl,--whole-archive /usr/lib64/haswell/libpython3.9.so -Wl,--no-whole-archive"
+export LDFLAGS="-g3 -O3 -Wl,--no-as-needed -Wl,--whole-archive /usr/lib64/haswell/libpython3.9.so -Wl,--no-whole-archive --param=lto-max-streaming-parallelism=16 -fgraphite-identity -fuse-ld=bfd -fuse-linker-plugin -malign-data=cacheline -fipa-pta -flto=16"
 #
 export AR=/usr/bin/gcc-ar
 export RANLIB=/usr/bin/gcc-ranlib
