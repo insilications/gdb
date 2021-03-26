@@ -1,5 +1,5 @@
 PKG_NAME := gdb
-URL = file:///insilications/apps/binutils-gdb.tar.gz
+URL = file:///aot/build/clearlinux/packages/gdb/gdb-10.1.tar.xz
 ARCHIVES = 
 
 include ../common/Makefile.common

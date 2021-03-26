@@ -6,8 +6,8 @@
 Name     : gdb
 Version  : 10.1
 Release  : 277
-URL      : file:///insilications/apps/binutils-gdb.tar.gz
-Source0  : file:///insilications/apps/binutils-gdb.tar.gz
+URL      : file:///aot/build/clearlinux/packages/gdb/gdb-10.1.tar.xz
+Source0  : file:///aot/build/clearlinux/packages/gdb/gdb-10.1.tar.xz
 Summary  : zlib compression library
 Group    : Development/Tools
 License  : GFDL-1.1 GPL-1.0+ GPL-2.0 GPL-2.0+ GPL-3.0 GPL-3.0+ LGPL-2.0 LGPL-2.0+ LGPL-2.1 Public-Domain
@@ -33,7 +33,6 @@ BuildRequires : glibc-locale
 BuildRequires : glibc-staticdev
 BuildRequires : gmp
 BuildRequires : gmp-dev
-BuildRequires : grep
 BuildRequires : libxslt-bin
 BuildRequires : mpfr
 BuildRequires : mpfr-dev
@@ -124,8 +123,8 @@ staticdev components for the gdb package.
 
 
 %prep
-%setup -q -n binutils-gdb
-cd %{_builddir}/binutils-gdb
+%setup -q -n gdb-10.1
+cd %{_builddir}/gdb-10.1
 
 %build
 unset http_proxy
@@ -133,7 +132,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1615856834
+export SOURCE_DATE_EPOCH=1616754904
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -151,11 +150,6 @@ export NM=/usr/bin/gcc-nm
 #
 export MAKEFLAGS=%{?_smp_mflags}
 #
-%global _lto_cflags 1
-#global _lto_cflags %{nil}
-%global _disable_maintainer_mode 1
-#%global _disable_maintainer_mode %{nil}
-#
 unset CCACHE_DISABLE
 export PATH="/usr/lib64/ccache/bin:$PATH"
 export CCACHE_NOHASHDIR=true
@@ -169,16 +163,39 @@ export CCACHE_BASEDIR=/builddir/build/BUILD
 #export CCACHE_DEBUG=true
 #export CCACHE_NODIRECT=true
 ## altflags1 end
-%configure --enable-static --enable-targets=%{_arch}-unknown-linux-gnu,%{_arch}-generic-linux-gnu  --target=%{_arch}-generic-linux-gnu %{_arch}-generic-linux-gnu --enable-tui --disable-binutils --disable-ld --disable-gold --disable-gas --disable-sim --disable-gprof --with-intel-pt --with-separate-debug-dir=/usr/lib/debug --enable-plugins --with-system-zlib --with-python=/usr/bin/python3
+%configure --enable-static \
+--enable-targets=%{_arch}-unknown-linux-gnu \
+--target=%{_arch}-generic-linux-gnu \
+--enable-tui \
+--disable-binutils \
+--disable-ld \
+--disable-gold \
+--disable-gas \
+--disable-sim \
+--disable-gprof \
+--with-intel-pt \
+--with-separate-debug-dir=/usr/lib/debug \
+--enable-plugins \
+--with-system-zlib \
+--with-python=yes \
+--with-python=/usr/bin/python3 \
+--disable-rpath \
+PYTHON=/usr/bin/python3
 make  %{?_smp_mflags}
 
 
 %install
-export SOURCE_DATE_EPOCH=1615856834
+export SOURCE_DATE_EPOCH=1616754904
 rm -rf %{buildroot}
 %make_install
 %find_lang bfd
 %find_lang opcodes
+## Remove excluded files
+rm -f %{buildroot}/usr/share/info/bfd.info
+rm -f %{buildroot}/usr/include/bfd.h
+rm -f %{buildroot}/usr/include/bfd_stdint.h
+rm -f %{buildroot}/usr/include/bfdlink.h
+rm -f %{buildroot}/usr/include/ctf-api.h
 
 %files
 %defattr(-,root,root,-)
@@ -237,10 +254,6 @@ rm -rf %{buildroot}
 %files dev
 %defattr(-,root,root,-)
 /usr/include/ansidecl.h
-/usr/include/bfd.h
-/usr/include/bfd_stdint.h
-/usr/include/bfdlink.h
-/usr/include/ctf-api.h
 /usr/include/ctf.h
 /usr/include/diagnostics.h
 /usr/include/dis-asm.h
@@ -252,8 +265,15 @@ rm -rf %{buildroot}
 %files info
 %defattr(0644,root,root,0755)
 /usr/share/info/annotate.info
-/usr/share/info/bfd.info
 /usr/share/info/gdb.info
+/usr/share/info/gdb.info-1
+/usr/share/info/gdb.info-2
+/usr/share/info/gdb.info-3
+/usr/share/info/gdb.info-4
+/usr/share/info/gdb.info-5
+/usr/share/info/gdb.info-6
+/usr/share/info/gdb.info-7
+/usr/share/info/gdb.info-8
 /usr/share/info/stabs.info
 
 %files man

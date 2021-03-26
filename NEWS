@@ -1,813 +1,366 @@
--*- text -*-
-
-* A new format has been added to the nm program.  Specifying
-  --format=just-symbols (or just using -j) will tell the program to only
-  display symbol names and nothing else.
-
-* A new command line --keep-section-symbols has been added to objcopy and
-  strip.  This stops the removal of unused section symbols when the file is
-  copied.  Removing these symbols saves space, but sometimes they are needed by
-  other tools.
-
-* objcopy --weaken, --weaken-symbol and --weaken-symbols now make undefined
-  symbols weak on targets that support weak symbols.
-
-* Readelf and objdump can now display and use the contents of .debug_sup
-  sections.
-
-* Readelf and objdump will now follow links to separate debug info files by
-  default.  This behaviour can be stopped via the use of the new -wN or
-  --debug-dump=no-follow-links options for readelf and the -WN or
-  --dwarf=no-follow-links options for objdump.  Also the old behaviour can be
-  restored by the use of the --enable-follow-debug-links=no configure time
-  option.
-
-  The semantics of the =follow-links option have also been slightly changed.
-  When enabled, the option allows for the loading of symbol tables and string
-  tables from the separate files which can be used to enhance the information
-  displayed when dumping other sections, but it does not automatically imply
-  that information from the separate files should be displayed.
-
-  If other debug section display options are also enabled (eg
-  --debug-dump=info) then the contents of matching sections in both the main
-  file and the separate debuginfo file *will* be displayed.  This is because in
-  most cases the debug section will only be present in one of the files.
-
-  If however non-debug section display options are enabled (eg --sections) then
-  the contents of matching parts of the separate debuginfo file will *not* be
-  displayed.  This is because in most cases the user probably only wanted to
-  load the symbol information from the separate debuginfo file.  In order to
-  change this behaviour a new command line option --process-links can be used.
-  This will allow di0pslay options to applied to both the main file and any
-  separate debuginfo files.
-
-* Nm has a new command line option: --quiet.  This suppresses "no symbols"
-  diagnostic.
-
-Changes in 2.36:
-
-* Update elfedit and readelf with LAM_U48 and LAM_U57 support.
-
-* Nm has a new command line option: --ifunc-chars=CHARS.  This specifies a
-  string of one or two characters.  The first character is used as the type
-  character when displaying global ifunc symbols.  The second character, if
-  present is used when displaying local ifunc symbols.
-
-  In addition a new configure time option --enable-f-for-ifunc-symbols has been
-  created, which if used will change nm's default characters for ifunc symbols
-  from i (both local and global) to F (global) and f (local).
-
-* The ar tool's previously unused l modifier is now used for specifying
-  dependencies of a static library. The arguments of this option
-  (or --record-libdeps long form option) will be stored verbatim in the
-  __.LIBDEP member of the archive, which the linker may read at link time.
-
-* Readelf can now display the contents of LTO symbol table sections when asked
-  to do so via the --lto-syms command line option.
-
-* Readelf now accepts the -C command line option to enable the demangling of
-  symbol names.  In addition the --demangle=<style>, --no-demangle,
-  --recurse-limit and --no-recurse-limit options are also now availale.
-
-* Add support for the SHF_GNU_RETAIN ELF section flag.
-  This flag specifies that the section should not be garbage collected by the
-  linker.
-
-Changes in 2.35:
-
-* Changed readelf's display of symbol names when wide mode is not enabled.
-  If the name is too long it will be truncated and the last five characters
-  replaced with "[...]".  The old behaviour of displaying 5 more characters but
-  not indicating that truncation has happened can be restored by the use of the
-  -T or --silent-truncation options.
-
-* X86 NaCl target support is removed.
-
-* The readelf tool now has a -L or --lint or --enable-checks option which turns
-  on warning messages about possible problems with the file(s) being examined.
-  These checks include things like zero-sized sections, which are allowed by
-  the ELF standard but which nevertheless might be of concern if the user
-  was expecting them to actually contain something.
-
-Changes in 2.34:
-
-* Binutils now supports debuginfod, an HTTP server for distributing
-  ELF/DWARF debugging information as well as source code. When built with
-  debuginfod, readelf and objdump can automatically query debuginfod
-  servers for separate debug files when they otherwise cannot be found.
-  To build binutils with debuginfod, pass --with-debuginfod to configure.
-  This requires libdebuginfod, the debuginfod client library. debuginfod
-  is distributed with elfutils, starting with version 0.178. For more
-  information see https://sourceware.org/elfutils.
-
-* Add --output option to the "ar" program.  This option can be used to specify
-  the output directory when extracting members from an archive.
-
-* Add --keep-section option to objcopy and strip.  This option keeps the
-  specified section from being removed.
-
- * Add visualization of jumps inside a function by drawing an ascii character
-   graph between the address and the disassembler column.  Enabled via the
-   --visualize-jumps command line option for objdump.  Currently supported by
-   the x86, x86_64, and ARM targets.  The output looks something like this:
+This is a terse description of the new features added to readline-8.0 since
+the release of readline-7.0.
 
-  c6:	|  |     \----------> be 00 00 00 00       	mov    $0x0,%esi
-  cb:	|  |           /----> 48 8b 3d 00 00 00 00 	mov    0x0(%rip),%rdi        # d2 <main+0xd2>
-  d2:	|  |           |      31 c0                	xor    %eax,%eax
-  d4:	|  |           |  /-- e8 00 00 00 00       	callq  d9 <main+0xd9>
-  d9:	|  |           |  \-> bf 02 00 00 00       	mov    $0x2,%edi
-  de:	|  +-----------|----- e8 00 00 00 00       	callq  e3 <main+0xe3>
-  e3:	|  \-----------|----> 48 89 da             	mov    %rbx,%rdx
-  e6:	|              |      be 00 00 00 00       	mov    $0x0,%esi
-  eb:	|              \----- eb de                	jmp    cb <main+0xcb>
-  ed:	\-------------------> 48 8b 16             	mov    (%rsi),%rdx
+New Features in Readline
 
-  Additional arguments to the --visualize-jumps option add colors to the
-  output.
+a. Non-incremental vi-mode search (`N', `n') can search for a shell pattern, as
+   Posix specifies (uses fnmatch(3) if available).
 
-Changes in 2.33:
+b. There are new `next-screen-line' and `previous-screen-line' bindable
+   commands, which move the cursor to the same column in the next, or previous,
+   physical line, respectively.
 
-* Add --source-comment[=<txt>] option to objdump which if present,
-  provides a prefix to source code lines displayed in a disassembly.
+c. There are default key bindings for control-arrow-key key combinations.
 
-* Add --set-section-alignment <section-name>=<align> option to objcopy to allow
-  the changing of section alignments.
+d. A negative argument (-N) to `quoted-insert' means to insert the next N
+   characters using quoted-insert.
 
-* Add --verilog-data-width option to objcopy for verilog targets to control
-  width of data elements in verilog hex format.
+e. New public function: rl_check_signals(), which allows applications to
+   respond to signals that readline catches while waiting for input using
+   a custom read function.
 
-* Add support for the Armv8.1-M Mainline and M-profile Vector Extension (MVE)
-  instructions.
+f. There is new support for conditionally testing the readline version in an
+   inputrc file, with a full set of arithmetic comparison operators available.
 
-* The separate debug info file options of readelf (--debug-dump=links
-  and --debug-dump=follow) and objdump (--dwarf=links and
-  --dwarf=follow-links) will now display and/or follow multiple links if
-  more than one are present in a file.  (This usually happens when gcc's
-  -gsplit-dwarf option is used).
+g. There is a simple variable comparison facility available for use within an
+   inputrc file. Allowable operators are equality and inequality; string
+   variables may be compared to a value; boolean variables must be compared to
+   either `on' or `off'; variable names are separated from the operator by
+   whitespace.
 
-  In addition objdump's --dwarf=follow-links now also affects its other
-  display options, so that for example, when combined with --syms it will
-  cause the symbol tables in any linked debug info files to also be
-  displayed.  In addition when combined with --disassemble the --dwarf=
-  follow-links option will ensure that any symbol tables in the linked
-  files are read and used when disassembling code in the main file.
+h. The history expansion library now understands command and process
+   substitution and extended globbing and allows them to appear anywhere in a
+   word.
 
- * Add support for dumping types encoded in the Compact Type Format
-   to objdump and readelf.
+i. The history library has a new variable that allows applications to set the
+   initial quoting state, so quoting state can be inherited from a previous
+   line.
 
-Changes in 2.32:
+j. Readline now allows application-defined keymap names; there is a new public
+   function, rl_set_keymap_name(), to do that.
 
-* The addr2line, c++filt, nm and objdump tools now have a limit on the
-  maximum amount of recursion that is allowed whilst demangling strings.
-  The value for this limit is defined by the DEMANGLE_RECRUSE_LIMIT
-  constant declared in the include/demangle.h header file.  At the time
-  of writing this constant has the value of 2048.
+k. The "Insert" keypad key, if available, now puts readline into overwrite
+   mode.
 
-  The --no-recurse-limit option can be used to remove the limit, restoring
-  the behaviour of earlier versions of these tools.  This may be needed in
-  order to dmangle truly complicated names, but it also leaves the tools
-  vulnerable to stack exhaustion from maliciously constructed mangled names.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-7.0 since
+the release of readline-6.3.
 
-* Objdump's --disassemble option can now take a parameter, specifying the
-  starting symbol for disassembly.  Disassembly will continue from this
-  symbol up to the next symbol or the end of the function.
+New Features in Readline
 
-* The MIPS port now supports the Loongson 2K1000 processor which implements
-  the MIPS64r2 ISA, the Loongson-mmi ASE, Loongson-cam ASE, Loongson-ext ASE,
-  Loongson-ext2 ASE and MSA ASE instructions. Add -march=gs264e option for
-  Loongson 2K1000 processor.
+a.  The history truncation code now uses the same error recovery mechansim as
+    the history writing code, and restores the old version of the history file
+    on error.  The error recovery mechanism handles symlinked history files.
 
-* The MIPS port now supports the Loongson 3A2000/3A3000 processor which
-  implements the MIPS64r2 ISA, the Loongson-mmi ASE, Loongson-cam ASE,
-  Loongson-ext ASE and Loongson-ext2 ASE instructions. Add -march=gs464e
-  option for Loongson 3A2000/3A3000 processor.
+b.  There is a new bindable variable, `enable-bracketed-paste', which enables
+    support for a terminal's bracketed paste mode.
 
-* The MIPS port now supports the Loongson 3A1000 processor, aka Loongson3a,
-  which implements the MIPS64r2 ISA, the Loongson-mmi ASE, Loongson-cam ASE
-  and Loongson-ext ASE instructions. Add -march=gs464 option for Loongson
-  3A1000 processor, The -march=loongson3a is an alias of -march=gs464 for
-  compatibility.
+c.  The editing mode indicators can now be strings and are user-settable
+    (new `emacs-mode-string', `vi-cmd-mode-string' and `vi-ins-mode-string'
+    variables).  Mode strings can contain invisible character sequences.
+    Setting mode strings to null strings restores the defaults.
 
-* The size tool now has a new output format '--format=GNU' or '-G'.  The
-  results are displayed in a similar manor to the default berkeley layout,
-  except read-only data is counted in the data column, not the text column.
-  Additionally the total is only included once.
+d.  Prompt expansion adds the mode string to the last line of a multi-line
+    prompt (one with embedded newlines).
 
-Changes in 2.31:
+e.  There is a new bindable variable, `colored-completion-prefix', which, if
+    set, causes the common prefix of a set of possible completions to be
+    displayed in color.
 
-* Add support for disassembling netronome Flow Processor (NFP) firmware files.
+f.  There is a new bindable command `vi-yank-pop', a vi-mode version of emacs-
+    mode yank-pop.
 
-* The AArch64 port now supports showing disassembly notes which are emitted
-  when inconsistencies are found with the instruction that may result in the
-  instruction being invalid.  These can be turned on with the option -M notes
-  to objdump.
+g.  The redisplay code underwent several efficiency improvements for multibyte
+    locales.
 
-* The AArch64 port now emits warnings when a combination of an instruction and
-  a named register could be invalid.
+h.  The insert-char function attempts to batch-insert all pending typeahead
+    that maps to self-insert, as long as it is coming from the terminal.
 
-* Added O modifier to ar to display member offsets inside an archive
+i.  rl_callback_sigcleanup: a new application function that can clean up and
+    unset any state set by readline's callback mode.  Intended to be used
+    after a signal.
 
-Changes in 2.30:
+j.  If an incremental search string has its last character removed with DEL, the
+    resulting empty search string no longer matches the previous line.
 
-* Add --debug-dump=links option to readelf and --dwarf=links option to objdump
-  which displays the contents of any .gnu_debuglink or .gnu_debugaltlink
-  sections.
+k.  If readline reads a history file that begins with `#' (or the value of
+    the history comment character) and has enabled history timestamps, the history
+    entries are assumed to be delimited by timestamps.  This allows multi-line
+    history entries.
 
-  Add a --debug-dump=follow-links option to readelf and a --dwarf=follow-links
-  option to objdump which causes indirect links into separate debug info files
-  to be followed when dumping other DWARF sections.
+l.  Readline now throws an error if it parses a key binding without a terminating
+    `:' or whitespace.
 
-Changes in 2.29:
+m.  The default binding for ^W in vi mode now uses word boundaries specified
+    by Posix (vi-unix-word-rubout is bindable command name).
 
-* The MIPS port now supports microMIPS eXtended Physical Addressing (XPA)
-  instructions for assembly and disassembly.
+n.  rl_clear_visible_line: new application-callable function; clears all
+    screen lines occupied by the current visible readline line.
 
-* The MIPS port now supports the microMIPS Release 5 ISA for assembly and
-  disassembly.
+o.  rl_tty_set_echoing: application-callable function that controls whether
+    or not readline thinks it is echoing terminal output.
 
-* The MIPS port now supports the Imagination interAptiv MR2 processor,
-  which implements the MIPS32r3 ISA, the MIPS16e2 ASE as well as a couple
-  of implementation-specific regular MIPS and MIPS16e2 ASE instructions.
+p.  Handle >| and strings of digits preceding and following redirection
+    specifications as single tokens when tokenizing the line for history
+    expansion.
 
-* The SPARC port now supports the SPARC M8 processor, which implements the
-  Oracle SPARC Architecture 2017.
+q.  Fixed a bug with displaying completions when the prefix display length
+    is greater than the length of the completions to be displayed.
 
-* The MIPS port now supports the MIPS16e2 ASE for assembly and disassembly.
+r.  The :p history modifier now applies to the entire line, so any expansion
+    specifying :p causes the line to be printed instead of expanded.
 
-* Add support for ELF SHF_GNU_MBIND and PT_GNU_MBIND_XXX.
+s.  New application-callable function: rl_pending_signal(): returns the signal
+    number of any signal readline has caught but not yet handled.
+    
+t.  New application-settable variable: rl_persistent_signal_handlers: if set
+    to a non-zero value, readline will enable the readline-6.2 signal handler
+    behavior in callback mode: handlers are installed when
+    rl_callback_handler_install is called and removed removed when a complete
+    line has been read.
 
-* Add support for the wasm32 ELF conversion of the WebAssembly file format.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-6.3 since
+the release of readline-6.2.
 
-* Add --inlines option to objdump, which extends the --line-numbers option
-  so that inlined functions will display their nesting information.
+New Features in Readline
 
-* Add --merge-notes options to objcopy to reduce the size of notes in
-  a binary file by merging and deleting redundant notes.
+a.  Readline is now more responsive to SIGHUP and other fatal signals when
+    reading input from the terminal or performing word completion but no
+    longer attempts to run any not-allowable functions from a signal handler
+    context.
 
-* Add support for locating separate debug info files using the build-id
-  method, where the separate file has a name based upon the build-id of
-  the original file.
+b.  There are new bindable commands to search the history for the string of
+    characters between the beginning of the line and the point
+    (history-substring-search-forward, history-substring-search-backward)
 
-Changes in 2.28:
+c.  Readline allows quoted strings as the values of variables when setting
+    them with `set'.  As a side effect, trailing spaces and tabs are ignored
+    when setting a string variable's value.
 
-* This version of binutils fixes a problem with PowerPC VLE 16A and 16D
-  relocations which were functionally swapped, for example,
-  R_PPC_VLE_HA16A performed like R_PPC_VLE_HA16D while R_PPC_VLE_HA16D
-  performed like R_PPC_VLE_HA16A.  This could have been fixed by
-  renumbering relocations, which would keep object files created by an
-  older version of gas compatible with a newer ld.  However, that would
-  require an ABI update, affecting other assemblers and linkers that
-  create and process the relocations correctly.  It is recommended that
-  all VLE object files be recompiled, but ld can modify the relocations
-  if --vle-reloc-fixup is passed to ld.  If the new ld command-line
-  option is not used, ld will ld warn on finding relocations inconsistent
-  with the instructions being relocated.
+d.  The history library creates a backup of the history file when writing it
+    and restores the backup on a write error.
 
-* The nm program has a new command-line option (--with-version-strings)
-  which will display a symbol's version information, if any, after the
-  symbol's name.
+e.  New application-settable variable: rl_filename_stat_hook: a function called
+    with a filename before using it in a call to stat(2).  Bash uses it to
+    expand shell variables so things like $HOME/Downloads have a slash
+    appended.
 
-* The ARC port of objdump now accepts a -M option to specify the extra
-  instruction class(es) that should be disassembled.
+f.  New bindable function `print-last-kbd-macro', prints the most-recently-
+    defined keyboard macro in a reusable format.
 
-* The --remove-section option for objcopy and strip now accepts section
-  patterns starting with an exclamation point to indicate a non-matching
-  section.  A non-matching section is removed from the set of sections
-  matched by an earlier --remove-section pattern.
+g.  New user-settable variable `colored-stats', enables use of colored text
+    to denote file types when displaying possible completions (colored analog
+    of visible-stats).
 
-* The --only-section option for objcopy now accepts section patterns
-  starting with an exclamation point to indicate a non-matching section.
-  A non-matching section is removed from the set of sections matched by
-  an earlier --only-section pattern.
+h.  New user-settable variable `keyseq-timout', acts as an inter-character
+    timeout when reading input or incremental search strings.
 
-* New --remove-relocations=SECTIONPATTERN option for objcopy and strip.
-  This option can be used to remove sections containing relocations.
-  The SECTIONPATTERN is the section to which the relocations apply, not
-  the relocation section itself.
+i.  New application-callable function: rl_clear_history. Clears the history list
+    and frees all readline-associated private data.
 
-Changes in 2.27:
+j.  New user-settable variable, show-mode-in-prompt, adds a characters to the
+    beginning of the prompt indicating the current editing mode.
 
-* Add a configure option, --enable-64-bit-archive, to force use of a
-  64-bit format when creating an archive symbol index.
+k.  New application-settable variable: rl_input_available_hook; function to be
+    called when readline detects there is data available on its input file
+    descriptor.
 
-* Add --elf-stt-common= option to objcopy for ELF targets to control
-  whether to convert common symbols to the STT_COMMON type.
+l.  Readline calls an application-set event hook (rl_event_hook) after it gets
+    a signal while reading input (read returns -1/EINTR but readline does not
+    handle the signal immediately) to allow the application to handle or
+    otherwise note it.
 
-Changes in 2.26:
+m.  If the user-settable variable `history-size' is set to a value less than
+    0, the history list size is unlimited.
 
-* Add option to objcopy to insert new symbols into a file:
-  --add-symbol <name>=[<section>:]<value>[,<flags>]
+n.  New application-settable variable: rl_signal_event_hook; function that is
+    called when readline is reading terminal input and read(2) is interrupted
+    by a signal.  Currently not called for SIGHUP or SIGTERM.
 
-* Add support for the ARC EM/HS, and ARC600/700 architectures.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-6.1 since
+the release of readline-6.0.
 
-* Extend objcopy --compress-debug-sections option to support
-  --compress-debug-sections=[none|zlib|zlib-gnu|zlib-gabi] for ELF
-  targets.
+New Features in Readline
 
-* Add --update-section option to objcopy.
+a.  New bindable function: menu-complete-backward.
 
-* Add --output-separator option to strings.
+b.  In the vi insertion keymap, C-n is now bound to menu-complete by default,
+    and C-p to menu-complete-backward.
 
-Changes in 2.25:
+c.  When in vi command mode, repeatedly hitting ESC now does nothing, even
+    when ESC introduces a bound key sequence.  This is closer to how
+    historical vi behaves.
 
-* Add --data option to strings to only print strings in loadable, initialized
-  data sections.  Change the default behaviour to be --all, but add a new
-  configure time option of --disable-default-strings-all to restore the old
-  default behaviour.
+d.  New bindable function: skip-csi-sequence.  Can be used as a default to
+    consume key sequences generated by keys like Home and End without having
+    to bind all keys.
 
-* Add --include-all-whitespace to strings.
+e.  New application-settable function: rl_filename_rewrite_hook.  Can be used
+    to rewite or modify filenames read from the file system before they are
+    compared to the word to be completed.
 
-* Add --dump-section option to objcopy.
+f.  New bindable variable: skip-completed-text, active when completing in the
+    middle of a word.  If enabled, it means that characters in the completion
+    that match characters in the remainder of the word are "skipped" rather
+    than inserted into the line.
 
-* Add support for the Andes NDS32.
+g.  The pre-readline-6.0 version of menu completion is available as
+    "old-menu-complete" for users who do not like the readline-6.0 version.
 
-Changes in 2.24:
+h.  New bindable variable: echo-control-characters.  If enabled, and the
+    tty ECHOCTL bit is set, controls the echoing of characters corresponding
+    to keyboard-generated signals.
 
-* Objcopy now supports wildcard characters in command-line options that take
-  section names.
+i.  New bindable variable: enable-meta-key.  Controls whether or not readline
+    sends the smm/rmm sequences if the terminal indicates it has a meta key
+    that enables eight-bit characters.
 
-* Add support for Altera Nios II.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-6.0 since
+the release of readline-5.2.
 
-Changes in 2.23:
+New Features in Readline
 
-* Add support for the VLE extension to the PowerPC architecture.
+a.  A new variable, rl_sort_completion_matches; allows applications to inhibit
+    match list sorting (but beware: some things don't work right if
+    applications do this).
 
-* Add support for x64 Windows target of the delayed-load-library.
+b.  A new variable, rl_completion_invoking_key; allows applications to discover
+    the key that invoked rl_complete or rl_menu_complete.
 
-* Add support for the Renesas RL78 architecture.
+c.  The functions rl_block_sigint and rl_release_sigint are now public and
+    available to calling applications who want to protect critical sections
+    (like redisplay).
 
-Changes in 2.22:
+d.  The functions rl_save_state and rl_restore_state are now public and
+    available to calling applications; documented rest of readline's state
+    flag values.
 
-* Add support for displaying the contents of .debug.macro sections.
+e.  A new user-settable variable, `history-size', allows setting the maximum
+    number of entries in the history list.
 
-* Add --preprocessor-arg option to windres to specify additional options
-  passed to preprocessor.
+f.  There is a new implementation of menu completion, with several improvements
+    over the old; the most notable improvement is a better `completions
+    browsing' mode.
 
-* Add --dwarf-start and --dwarf-end to readelf and objdump.  These are used by
-  the new Emacs mode, see dwarf-mode.el.
+g.  The menu completion code now uses the rl_menu_completion_entry_function
+    variable, allowing applications to provide their own menu completion
+    generators.
 
-* Add support for the Tilera TILEPro and TILE-Gx architectures.
+h.  There is support for replacing a prefix  of a pathname with a `...' when
+    displaying possible completions.  This is controllable by setting the
+    `completion-prefix-display-length' variable.  Matches with a common prefix
+    longer than this value have the common prefix replaced with `...'.
 
-changes in 2.21:
+i.  There is a new `revert-all-at-newline' variable.  If enabled, readline will
+    undo all outstanding changes to all history lines when `accept-line' is
+    executed.
 
-* Add --interleave-width option to objcopy to allowing copying a range of
-  bytes from the input to the output with the --interleave option.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-5.2 since
+the release of readline-5.1.
 
-* Add support for the TMS320C6000 (TI C6X) processor family.
+New Features in Readline
 
-* Readelf can now display ARM unwind tables (.ARM.exidx / .ARM.extab) using
-  the -u / --unwind option.
+a.  Calling applications can now set the keyboard timeout to 0, allowing
+    poll-like behavior.
 
-* Add --dyn-syms to readelf to dump dynamic symbol table.
+b.  The value of SYS_INPUTRC (configurable at compilation time) is now used as
+    the default last-ditch startup file.
 
-* A new tool - elfedit - has been added to directly manipulate ELF format
-  binaries.
+c.  The history file reading functions now allow windows-like \r\n line
+    terminators.
 
-* Add to dlltool .def file feature of aliasing PE internal symbol name by
-  '== <ID>' option.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-5.1 since
+the release of readline-5.0.
 
-* Add a new command-line option -a / --addresses to addr2line to display the
-  address before function name or source filename.
+New Features in Readline
 
-* Add a new command-line option -p / --pretty-print to addr2line to have
-  a more human readable output.
+a.  The key sequence sent by the keypad `delete' key is now automatically   
+    bound to delete-char.
 
-* The hppa/som targets can now be compiled on any host.
+b.  A negative argument to menu-complete now cycles backward through the
+    completion list.
 
-Changes in 2.20:
+c.  A new bindable readline variable:  bind-tty-special-chars.  If non-zero,
+    readline will bind the terminal special characters to their readline
+    equivalents when it's called (on by default).
 
-* Add support for delay importing to dlltool.  Use the --output-delaylib <file>
-  switch to create a delay-import library.  The resulting app will load the dll
-  as soon as the first function is called.  It will link to __delayLoadHelper2()
-  from the static delayimp library, which will import LoadLibraryA and
-  GetProcAddress from kernel32.
+d.  New bindable command: vi-rubout.  Saves deleted text for possible  
+    reinsertion, as with any vi-mode `text modification' command; `X' is bound
+    to this in vi command mode.
 
-* Add a new command-line option, --insn-width=WIDTH, to objdump to specify
-  number of bytes to be displayed on a single line when disassembling
-  instructions.
+e.  If the rl_completion_query_items is set to a value < 0, readline never
+    asks the user whether or not to view the possible completions.
 
-* Readelf can now display the relocated contents of a section as a sequence
-  of bytes via the --relocated-dump=<name|number> command-line option.
+f.  New application-callable auxiliary function, rl_variable_value, returns
+    a string corresponding to a readline variable's value.
 
-* The gprof program has been given a new command-line option:
-  --external-symbols-table=<filename> which reads in symbols from a specified
-  file.
+g.  When parsing inputrc files and variable binding commands, the parser
+    strips trailing whitespace from values assigned to boolean variables
+    before checking them.
 
-* The plugin target has been added to bfd. It can load the same shared objects
-  used by gold and uses them to provide basic support for new file formats.
+h.  A new external application-controllable variable that allows the LINES
+    and COLUMNS environment variables to set the window size regardless of
+    what the kernel returns.
 
-* The verilog memory hex dump file format is now supported as an output format
-  for objcopy.
 
-* Add --file-alignment, --heap, --image-base, --section-alignment,
-  --stack and --subsystem command-line options to objcopy, which will
-  set PE optional header.
+-------------------------------------------------------------------------------
+This is a terse description of the new features added to readline-5.0 since
+the release of readline-4.3.
 
-* Option --dwarf/-W of objdump is now as flexible as readelf --debug-dump/-w.
+New Features in Readline
 
-* --as-needed now links in a dynamic library if it satisfies undefined
-  symbols in regular objects, or in other dynamic libraries.  In the
-  latter case the library is not linked if it is found in a DT_NEEDED
-  entry of one of the libraries already linked.
+a.  History expansion has a new `a' modifier equivalent to the `g' modifier
+    for compatibility with the BSD csh.
 
-* Added --prefix=PREFIX and --prefix-strip=LEVEL switches to objdump to
-  add absolute paths for -S.
+b.  History expansion has a new `G' modifier equivalent to the BSD csh `g'
+    modifier, which performs a substitution once per word.
 
-* Add new option --use-nul-prefixed-import-tables to dlltool to allow fall-
-  back to old import table generation with null element prefix.
+c.  All non-incremental search operations may now undo the operation of
+    replacing the current line with the history line.
 
-* Added --identify-strict switch to cause --identify <implib> to
-  report an error when the import library is associated with
-  multiple DLLs.
+d.  The text inserted by an `a' command in vi mode can be reinserted with
+    `.'.
 
-* Added --identify <implib> option to dlltool, which determines the
-  name of the DLL associated with the specified <implib>.
+e.  New bindable variable, `show-all-if-unmodified'.  If set, the readline
+    completer will list possible completions immediately if there is more
+    than one completion and partial completion cannot be performed.
 
-* Support for PowerPC booke64 instructions has been removed.  The assembler no
-  longer accepts -mbooke32 or -mbooke64 and the disassembler no longer accepts
-  -Mbooke32 or -Mbooke64.  Instead, -mbooke and -Mbooke should be used.
+f.  There is a new application-callable `free_history_entry()' function.
 
-Changes in 2.19:
+g.  History list entries now contain timestamp information; the history file
+    functions know how to read and write timestamp information associated
+    with each entry.
 
-* Added -wL switch to dump decoded contents of .debug_line.
+h.  Four new key binding functions have been added:
 
-* Added support for "thin" archives which contain pathnames pointing to
-  object files rather than the files themselves and which contain a
-  flattened symbol index for all objects, and archives, which have been
-  added to the archive.
+	rl_bind_key_if_unbound()
+	rl_bind_key_if_unbound_in_map()
+	rl_bind_keyseq_if_unbound()
+	rl_bind_keyseq_if_unbound_in_map()
 
-* Added -F switch to objdump to include file offsets in the disassembly.
+i.  New application variable, rl_completion_quote_character, set to any
+    quote character readline finds before it calls the application completion
+    function.
 
-* Added -c switch to readelf to allow string dumps of archive symbol index.
+j.  New application variable, rl_completion_suppress_quote, settable by an   
+    application completion function.  If set to non-zero, readline does not
+    attempt to append a closing quote to a completed word.
+    
+k.  New application variable, rl_completion_found_quote, set to a non-zero
+    value if readline determines that the word to be completed is quoted.
+    Set before readline calls any application completion function.
 
-* Support for SSE5 has been added to the i386 port.
+l.  New function hook, rl_completion_word_break_hook, called when readline
+    needs to break a line into words when completion is attempted.  Allows
+    the word break characters to vary based on position in the line.
 
-* Added -p switch to readelf to allow string dumps of sections.
+m.  New bindable command: unix-filename-rubout.  Does the same thing as
+    unix-word-rubout, but adds `/' to the set of word delimiters.
 
-Changes in 2.18:
-
-* Resolved 37 coding problems in bfd including static array overruns, null
-  pointer dereferences and use of a malloc buffer after it has been freed, as
-  revealed by static analysis donated by Coverity, Inc. (http://scan.coverity.com).
-
-* The binutils sources are now released under version 3 of the GNU General
-  Public License.
-
-* A new tool "windmc" has been added for some targets.  This is a message
-  compiler which attempts to be compatible with the MS version.
-
-* Add codepage support to the windres tool.  It now supports many new
-  resource types (e.g. MANIFEST, TOOLBAR, etc).  The output generation
-  for binary files is done now via bfd itself.  The endianess problems
-  for different hosts are solved.  Dumps of .res files can now be
-  re-compiled by windres without lossing resources or compilation errors.
-  Some problems on dialog resource translations are corrected.
-
-* Add --extract-symbol command-line option to objcopy, which will
-  strip everything out of an ordinary object file or executable except
-  for its symbol table.  Files containing just symbols can be useful
-  to some OSes.
-
-Changes in 2.17:
-
-* Add "-x NAME" to readelf in addition to "-x NUMBER".
-
-* Add -i and -t switches to cxxfilt.  -i disables the display of implementation
-  specific extra demangling information (if any) and -t disables the demangling
-  of types.
-
-* Add support for the "@<file>" syntax to the command lines of all tools, so
-  that extra switches can be read from <file>.
-
-* Add "-W/--dwarf" to objdump to display the contents of the DWARF
-  debug sections.
-
-* Add "-t/--section-details" to readelf to display section details.
-  "-N/--full-section-name" is deprecated.
-
-* powerpc-linux ld now supports a variant form of PLT and GOT for the security
-  conscious.  This form will automatically be chosen when ld detects that all
-  code in regular object files was generated by gcc -msecure-plt.  The old PLT
-  and GOT may be forced by a new ld option, --bss-plt.
-
-* Add "-i/--inlines" to addr2line to print enclosing scope information
-  for inlined function chains, back to first non-inlined function.
-
-* Add "-N/--full-section-name" to readelf to display full section name.
-
-* Add "-M entry:<addr>" switch to objdump to specify a function entry address
-  when disassembling VAX binaries.
-
-* Add "--globalize-symbol <name>" and "--globalize-symbols <filename>" switches
-  to objcopy to convert local symbols into global symbols.
-
-* gprof now allows input files to have histogram records for
-  several memory ranges, provided those ranges are disjoint.
-
-Changes in 2.16:
-
-* Add "-g/--section-groups" to readelf to display section groups.
-
-* objcopy recognizes two new options --strip-unneeded-symbol and
-  --strip-unneeded-symbols, namely for use together with the wildcard
-  matching the original --strip-symbol/--strip-symbols provided, but
-  retaining any symbols matching but needed by relocations.
-
-* readelf can now display address ranges from .debug_range sections.  This
-  happens automatically when a DW_AT_range attribute is encountered.  The
-  command-line switch --debug-dump=Ranges (or -wR) can also be used to display
-  the contents of the .debug_range section.
-
-* nm and objdump now have a switch "--special-syms" to enable the displaying of
-  symbols which the target considers to be special.  By default these symbols
-  are no longer displayed.  Currently the only special symbols are the Mapping
-  symbols used by the ARM port to mark transitions between text and data and
-  between ARM and THUMB code.
-
-* dlltool has a switch "--ext-prefix-alias <prefix>" to generate additional
-  import and export symbols with <preifx> prepended to them.
-
-Changes in 2.15:
-
-* objcopy for MIPS targets now accepts "-M no-aliases" as an option to the
-  disassembler to print the "raw" mips instruction mnemonic instead of some
-  pseudo instruction name.  I.E. print "daddu" or "or" instead of "move",
-  "sll" instead of "nop", etc.
-
-* objcopy and strip can now take wildcard patterns in symbol names specified on
-  the command line provided that the --wildcard switch is used to enable them.
-
-* readelf can now parse archives.
-
-* objdump now accepts --debugging-tags to print the debug information in a
-  format compatible with ctags tool.
-
-* objcopy and strip now accept --only-keep-debug to create a file containing
-  those sections that would be stripped out by --strip-debug.  The idea is that
-  this can be used in conjunction with the --add-gnu-debuglink switch to create
-  a two part program distribution - one a stripped executable and the other the
-  debugging info.
-
-* objcopy now accepts --add-gnu-debuglink=<file> to insert a .gnu_debuglink
-  section into a (presumably stripped) executable.  This allows the debug
-  information for the file to be held in a separate file.
-
-* BFD marks the sections .comment and .note as 'n' in the BSD/POSIX
-  single-character representation.  This can be checked by running nm
-  with the -a switch.
-
-Changes in 2.14:
-
-* Added --info switch to objcopy and strip.
-
-* Support for Vitesse IQ2000 added by Red Hat.
-
-* Added 'S' encoding to strings to allow the display of 8-bit characters.
-
-* Added --prefix-symbols=<text>, --prefix-sections=<text> and
-  --prefix-alloc-sections=<text> to objcopy.
-
-* readelf can handle the extensions to the DWARF2 spec used by the Unified
-  Parallel C compiler.
-
-* BFD no longer declares a "boolean" type, to avoid clashes with other
-  headers that declare the same.  Users of BFD should replace boolean,
-  false and true, with int, 0 and 1, or define their own boolean type.
-
-* Support for IP2K added by Denis Chertykov.
-
-Changes in 2.13:
-
-* Support for the Fujitsu FRV architecture added by Red Hat. Models for FR400
-  and FR500 included.
-
-Changes in version 2.12:
-
-* Support for Don Knuth's MMIX, by Hans-Peter Nilsson.
-
-* size: Add --totals to display summary of sizes (Berkeley format only).
-
-* readelf: Add --wide option to not break section header or segment listing
-  lines to fit into 80 columns.
-
-* strings: Add --encoding to display wide character strings.  By Markus Kuhn.
-
-* objcopy: Add --rename-section to change section names.
-
-* readelf: Support added for DWARF 2.1 extensions.  Support added for
-  displaying the contents of .debug.macinfo sections.
-
-* New command-line switches added to objcopy to allow symbols to be kept as
-  global symbols, and also to specify files containing lists of such symbols.
-  by Honda Hiroki.
-
-* Support for OpenRISC by Johan Rydberg.
-
-* New command-line switch to objcopy --alt-machine-code which creates a binary
-  with an alternate machine code if one is defined in the architecture
-  description.  Only supported for ELF targets.  By Alexandre Oliva.
-
-* New command-line switch to objcopy -B (or --binary-architecture) which sets
-  the architecture of the output file to the given argument.  This option only
-  makes sense, if the input target is binary.  Otherwise it is ignored.
-  By Stefan Geuken.
-
-* Support for PDP-11 by Lars Brinkhoff.
-
-Changes in binutils 2.11:
-
-* Add support for ARM v5t and v5te architectures and Intel's XScale ARM
-  extenstions.
-
-* Add --srec-len and --srec-forceS3 command-line switch to objcopy.
-  By Luciano Gemme.
-
-* Support for the MIPS32, by Anders Norlander.
-
-* Support for the i860, by Jason Eckhardt.
-
-* Support for CRIS (Axis Communications ETRAX series).
-
-Changes in binutils 2.10:
-
-* Support for 64-bit ELF on HPPA.
-
-* New command-line switch to objdump --file-start-context which shows the
-  entire file contents up to the source line first encountered for a given
-  file.
-
-* New command-line switch to objdump -M (or --disassembler-options) which takes
-  a parameter which can then be interpreted on a per-target basis by the
-  disassembler.  Used by ARM targets to select register name sets, ISA, APCS or
-  raw verions.
-
-* objdump support for -mi386:intel which causes disassembly to be displayed
-  with intel syntax.
-
-* New program: readelf.  This displays the contents of ELF format files,
-  regardless of target machine.
-
-* objcopy now takes --change-section-lma, --change-section-vma, and
-  --change-section-address options.  The old --adjust-section-vma option is
-  equivalent to --change-section-address.  The other --adjust-* options are now
-  renamed to --change-*, although --adjust-* continues to work.
-
-* objcopy has a --redefine-sym option that lets you rename symbols.
-
-* objcopy now takes a -j/--only-section option to copy only the specified
-  sections.
-
-* dlltool now supports the IMPORTS command.
-
-* dlltool now takes --export-all-symbols, --no-export-all-symbols,
-  --exclude-symbols, and --no-default-excludes options.
-
-Changes in binutils 2.9:
-
-* Added windres program, which can be used to manipulate resources in WIN32
-  files as used on Windows 95 and Windows NT.
-
-* The objcopy --gap-fill and --pad-to options operate on the LMA rather than
-  the VMA of the sections.
-
-* Added S modifier to ar to not build a symbol table.
-
-Changes in binutils 2.8:
-
-* The objdump disassembly format has been changed, and hopefully improved.  Use
-  the new --prefix-addresses option to get the old format.  There are also new
-  --disassemble-zeroes and --no-show-raw-insn options which affect disassembler
-  output.
-
-* Formats may now be specified as configuration triplets.  For example,
-  objdump -b i386-pc-linux.  The triplets are not passed through config.sub,
-  so they must be in canonical form.
-
-* Added new addr2line program.  This uses the debugging information to convert
-  an address into a file name and line number within a program.
-
-* Added --change-leading-char argument to objcopy.
-
-* Added --weaken argument to objcopy.
-
-* objdump --dynamic-reloc now works on ELF executables and shared libraries.
-
-* Added --adjust-vma option to objdump.
-
-* Added -C/--demangle option to objdump.
-
-* Added -p/--preserve-dates option to strip and objcopy.
-
-Changes in binutils 2.7:
-
-* Added --enable-shared and --enable-commonbfdlib options to configure.
-
-* Added --debugging argument to objdump and objcopy.
-
-* Added --defined-only argument to nm.
-
-* Added --remove-leading-char argument to objcopy.
-
-* The objdump --line-numbers option is now meaningful with --reloc.
-
-* Added --line-numbers option to nm.
-
-* Added --endian/-EB/-EL option to objdump.
-
-* Added support for Alpha OpenVMS/AXP.
-
-Changes in binutils 2.6:
-
-* Added -N/--strip-symbol and -K/--keep-symbol arguments to strip and objcopy.
-
-* Added several arguments to objcopy to provide some control over how the new
-  file is laid out in memory.  Also added binary output format to BFD to permit
-  generating plain binary files.
-
-* Added --start-address and --stop-address options to objdump.
-
-* ar and ranlib now work on AIX.  The tools are now built by default on AIX.
-
-Changes in binutils 2.5:
-
-* Changed objdump -dr to dump the relocs interspersed with the assembly
-  listing, for a more useful listing of relocatable files.
-
-* Changed objdump -d/--disassemble to only disassemble SEC_CODE sections.
-  Added -D/--disassemble-all option to disassemble all sections.
-
-* Added --size-sort option to nm.
-
-* strip and objcopy should now be able to handle dynamically linked ELF
-  executables.
-
-Changes in binutils 2.4:
-
-* Support for HP-PA (by Jeff Law), i386 Mach (by David Mackenzie), RS/6000 and
-  PowerPC (except ar and ranlib; by Ian Taylor).
-
-* Support for Irix 5.
-
-* Programs `strip' and `objcopy' will not attempt to write dynamically linked
-  ELF output files, since BFD currently can't create them properly.
-
-Changes in binutils 2.3:
-
-* A new --stabs argument has been added to objdump to dump stabs sections in
-  ELF and COFF files.
-
-* A new program, nlmconv, has been added.  It can convert object files into
-  Novell NetWare Loadable Modules.
-
-* The strings program has been added.
-
-Changes in binutils 2.2:
-
-* The 'copy' program has been renamed to 'objcopy', for consistency with
-  'objdump', and because 'copy' might more plausibly be used as a synonym for
-  'cp'.
-
-* The new stand-alone program c++filt is a filter that converts encoded
-  (mangled) C++ assembly-level identifiers to user-level names.  (Note: This
-  may get moved to the gcc distribution.)
-
-* nm -o on an archive now prefixes each line with the archive name, matching
-  the output from BSD nm.
-
-* ar (and ld) can now read (but not write) BSD4.4-style archives.
-
-* New support for H8500, Z8000, and the Hitach SH.
-
-* Dis-assembler interface changed to allow sharing with gdb.
-
-* There is new Elf code, but it is not yet ready for general use.
-
-* There is the beginnings of a test suite.
-
-Changes in binutils 2.1:
-
-* There is now support for writing ECOFF files, so ld and the other utilities
-  should work on Risc/Ultrix and Irix.  Please let us know how well this works.
-
-* ar now automatically creates a symbol table (a __.SYMDEF member, in the BSD
-  version), if there are any object files in the archive.  So running ranlib is
-  now redundant (unless the non-standard q command is used).  This is required
-  for Posix.2 conformance.
-
-* The archive-reading code now reads both BSD-style and SYSV-style archives
-  independently of the selected target format.  This is to encourage people to
-  switch to SYSV-format, which has a number of advantages.
-
-* The strip and copy programs now have options to remove debug-symbols only
-  and/or local symbols only.  They now also support long options.
-
-
-Copyright (C) 2012-2021 Free Software Foundation, Inc.
-
-Copying and distribution of this file, with or without modification,
-are permitted in any medium without royalty provided the copyright
-notice and this notice are preserved.
-
-Local variables:
-fill-column: 79
-End:
+n.  When listing completions, directories have a `/' appended if the
+    `mark-directories' option has been enabled.

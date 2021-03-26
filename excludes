@@ -1,0 +1,5 @@
+/usr/share/info/bfd.info
+/usr/include/bfd.h
+/usr/include/bfd_stdint.h
+/usr/include/bfdlink.h
+/usr/include/ctf-api.h
