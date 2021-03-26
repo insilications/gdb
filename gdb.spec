@@ -14,7 +14,6 @@ License  : GFDL-1.1 GPL-1.0+ GPL-2.0 GPL-2.0+ GPL-3.0 GPL-3.0+ LGPL-2.0 LGPL-2.0
 Requires: gdb-bin = %{version}-%{release}
 Requires: gdb-data = %{version}-%{release}
 Requires: gdb-info = %{version}-%{release}
-Requires: gdb-locales = %{version}-%{release}
 Requires: gdb-man = %{version}-%{release}
 BuildRequires : autoconf
 BuildRequires : binutils-dev
@@ -97,14 +96,6 @@ Group: Default
 info components for the gdb package.
 
 
-%package locales
-Summary: locales components for the gdb package.
-Group: Default
-
-%description locales
-locales components for the gdb package.
-
-
 %package man
 Summary: man components for the gdb package.
 Group: Default
@@ -132,7 +123,7 @@ unset https_proxy
 unset no_proxy
 export SSL_CERT_FILE=/var/cache/ca-certs/anchors/ca-certificates.crt
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1616754904
+export SOURCE_DATE_EPOCH=1616757119
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -185,17 +176,55 @@ make  %{?_smp_mflags}
 
 
 %install
-export SOURCE_DATE_EPOCH=1616754904
+export SOURCE_DATE_EPOCH=1616757119
 rm -rf %{buildroot}
 %make_install
-%find_lang bfd
-%find_lang opcodes
 ## Remove excluded files
-rm -f %{buildroot}/usr/share/info/bfd.info
+rm -f %{buildroot}/usr/include/ansidecl.h
 rm -f %{buildroot}/usr/include/bfd.h
-rm -f %{buildroot}/usr/include/bfd_stdint.h
 rm -f %{buildroot}/usr/include/bfdlink.h
+rm -f %{buildroot}/usr/include/bfd_stdint.h
 rm -f %{buildroot}/usr/include/ctf-api.h
+rm -f %{buildroot}/usr/include/ctf.h
+rm -f %{buildroot}/usr/include/diagnostics.h
+rm -f %{buildroot}/usr/include/dis-asm.h
+rm -f %{buildroot}/usr/include/plugin-api.h
+rm -f %{buildroot}/usr/include/symcat.h
+rm -f %{buildroot}/usr/share/info/bfd.info
+rm -f %{buildroot}/usr/share/locale/da/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/da/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/de/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/es/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/es/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/fi/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/fi/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/fr/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/fr/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/ga/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/hr/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/id/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/id/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/it/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/ja/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/nl/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/pt_BR/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/pt/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/ro/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/ro/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/ru/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/rw/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/sr/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/sr/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/sv/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/sv/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/tr/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/tr/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/uk/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/uk/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/vi/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/vi/LC_MESSAGES/opcodes.mo
+rm -f %{buildroot}/usr/share/locale/zh_CN/LC_MESSAGES/bfd.mo
+rm -f %{buildroot}/usr/share/locale/zh_CN/LC_MESSAGES/opcodes.mo
 
 %files
 %defattr(-,root,root,-)
@@ -253,13 +282,7 @@ rm -f %{buildroot}/usr/include/ctf-api.h
 
 %files dev
 %defattr(-,root,root,-)
-/usr/include/ansidecl.h
-/usr/include/ctf.h
-/usr/include/diagnostics.h
-/usr/include/dis-asm.h
 /usr/include/gdb/jit-reader.h
-/usr/include/plugin-api.h
-/usr/include/symcat.h
 /usr/lib64/libinproctrace.so
 
 %files info
@@ -290,7 +313,3 @@ rm -f %{buildroot}/usr/include/ctf-api.h
 /usr/lib64/libctf-nobfd.a
 /usr/lib64/libctf.a
 /usr/lib64/libopcodes.a
-
-%files locales -f bfd.lang -f opcodes.lang
-%defattr(-,root,root,-)
-
